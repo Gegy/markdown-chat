@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "markdown_chat",
+  "version": "${version}",
+  "name": "Markdown Chat",
+  "description": "Server-side markdown chat formatting",
+  "authors": ["gegy1000"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": []
+  },
+  "mixins": ["markdown_chat.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.8.9",
+    "fabric": "*",
+    "minecraft": "1.16.x"
+  }
+}
