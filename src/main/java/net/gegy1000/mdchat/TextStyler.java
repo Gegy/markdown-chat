@@ -1,6 +1,8 @@
 package net.gegy1000.mdchat;
 
 import com.google.common.collect.Lists;
+import net.gegy1000.mdchat.parser.ColoredChatExtension;
+import net.gegy1000.mdchat.parser.FormattedNode;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.commonmark.ext.autolink.AutolinkExtension;
@@ -18,7 +20,11 @@ public final class TextStyler {
 
     private static final Parser PARSER = Parser.builder()
             .enabledBlockTypes(Collections.emptySet())
-            .extensions(Lists.newArrayList(AutolinkExtension.create(), StrikethroughExtension.create()))
+            .extensions(Lists.newArrayList(
+                    ColoredChatExtension.INSTANCE,
+                    AutolinkExtension.create(),
+                    StrikethroughExtension.create()
+            ))
             .build();
 
     private TextStyler() {
@@ -39,11 +45,13 @@ public final class TextStyler {
         } else if (node instanceof StrongEmphasis) {
             return this.renderStrongEmphasis((StrongEmphasis) node);
         } else if (node instanceof Emphasis) {
-            return this.renderFormat(node, Formatting.ITALIC);
+            return this.renderEmphasis(node, Formatting.ITALIC);
         } else if (node instanceof Strikethrough) {
-            return this.renderFormat(node, Formatting.STRIKETHROUGH);
+            return this.renderEmphasis(node, Formatting.STRIKETHROUGH);
         } else if (node instanceof Link) {
             return this.renderLink((Link) node);
+        } else if (node instanceof FormattedNode) {
+            return this.renderFormattedText((FormattedNode) node);
         }
 
         return this.renderChildren(node);
@@ -60,14 +68,23 @@ public final class TextStyler {
     private MutableText renderStrongEmphasis(StrongEmphasis emphasis) {
         String delimiter = emphasis.getOpeningDelimiter();
         if (delimiter.equals("__")) {
-            return this.renderFormat(emphasis, Formatting.UNDERLINE);
+            return this.renderEmphasis(emphasis, Formatting.UNDERLINE);
         } else {
-            return this.renderFormat(emphasis, Formatting.BOLD);
+            return this.renderEmphasis(emphasis, Formatting.BOLD);
         }
     }
 
     @Nullable
-    private MutableText renderFormat(Node node, Formatting formatting) {
+    private MutableText renderFormattedText(FormattedNode formatted) {
+        MutableText text = this.renderChildren(formatted);
+        if (text != null) {
+            return text.formatted(formatted.getFormatting());
+        }
+        return null;
+    }
+
+    @Nullable
+    private MutableText renderEmphasis(Node node, Formatting formatting) {
         MutableText text = this.renderChildren(node);
         if (text != null) {
             return text.formatted(formatting);
