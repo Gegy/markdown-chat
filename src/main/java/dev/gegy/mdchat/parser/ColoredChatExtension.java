@@ -1,4 +1,4 @@
-package net.gegy1000.mdchat.parser;
+package dev.gegy.mdchat.parser;
 
 import net.minecraft.util.Formatting;
 import org.commonmark.Extension;

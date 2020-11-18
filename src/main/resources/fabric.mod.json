@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "Markdown Chat",
   "description": "Server-side markdown chat formatting",
-  "authors": ["gegy1000"],
+  "authors": ["Gegy"],
   "license": "MIT",
   "environment": "*",
   "entrypoints": {

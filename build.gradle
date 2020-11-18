@@ -28,6 +28,7 @@ dependencies {
 
 	implementation 'com.atlassian.commonmark:commonmark-ext-autolink:0.15.2'
 	include 'com.atlassian.commonmark:commonmark-ext-autolink:0.15.2'
+	include 'org.nibor.autolink:autolink:0.10.0'
 
 	implementation 'com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.15.2'
 	include 'com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.15.2'

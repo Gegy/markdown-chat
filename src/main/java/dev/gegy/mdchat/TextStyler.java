@@ -1,8 +1,8 @@
-package net.gegy1000.mdchat;
+package dev.gegy.mdchat;
 
 import com.google.common.collect.Lists;
-import net.gegy1000.mdchat.parser.ColoredChatExtension;
-import net.gegy1000.mdchat.parser.FormattedNode;
+import dev.gegy.mdchat.parser.ColoredChatExtension;
+import dev.gegy.mdchat.parser.FormattedNode;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.commonmark.ext.autolink.AutolinkExtension;
