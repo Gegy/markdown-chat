@@ -145,7 +145,10 @@ public final class TextStyler {
 
             MutableText text = this.renderAsText(child);
             if (text != null) {
-                result = result != null ? result.append(text) : text;
+                if (result == null) {
+                    result = new LiteralText("");
+                }
+                result = result.append(text);
             }
 
             child = next;
