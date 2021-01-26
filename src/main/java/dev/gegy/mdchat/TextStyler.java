@@ -3,8 +3,11 @@ package dev.gegy.mdchat;
 import com.google.common.collect.Lists;
 import dev.gegy.mdchat.parser.ColoredChatExtension;
 import dev.gegy.mdchat.parser.FormattedNode;
+import dev.gegy.mdchat.parser.SpoilerExtension;
+import dev.gegy.mdchat.parser.SpoilerNode;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
+import org.apache.commons.lang3.StringUtils;
 import org.commonmark.ext.autolink.AutolinkExtension;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
@@ -22,6 +25,7 @@ public final class TextStyler {
             .enabledBlockTypes(Collections.emptySet())
             .extensions(Lists.newArrayList(
                     ColoredChatExtension.INSTANCE,
+                    SpoilerExtension.INSTANCE,
                     AutolinkExtension.create(),
                     StrikethroughExtension.create()
             ))
@@ -52,6 +56,8 @@ public final class TextStyler {
             return this.renderLink((Link) node);
         } else if (node instanceof FormattedNode) {
             return this.renderFormattedText((FormattedNode) node);
+        } else if (node instanceof SpoilerNode) {
+            return this.renderSpoiler((SpoilerNode) node);
         }
 
         return this.renderChildren(node);
@@ -79,6 +85,20 @@ public final class TextStyler {
         MutableText text = this.renderChildren(formatted);
         if (text != null) {
             return text.formatted(formatted.getFormatting());
+        }
+        return null;
+    }
+
+    @Nullable
+    private MutableText renderSpoiler(SpoilerNode spoiler) {
+        MutableText text = this.renderChildren(spoiler);
+        if (text != null) {
+            int spoilerLength = text.getString().length();
+            String spoilerString = StringUtils.repeat('█', spoilerLength);
+            return new LiteralText(spoilerString).styled(style -> {
+                return style.withColor(Formatting.DARK_GRAY)
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text));
+            });
         }
         return null;
     }
