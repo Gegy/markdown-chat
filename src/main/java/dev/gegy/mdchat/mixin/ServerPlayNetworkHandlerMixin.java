@@ -1,6 +1,7 @@
 package dev.gegy.mdchat.mixin;
 
 import dev.gegy.mdchat.TextStyler;
+import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -16,12 +17,12 @@ public class ServerPlayNetworkHandlerMixin {
     public ServerPlayerEntity player;
 
     @ModifyVariable(
-            method = "method_31286",
+            method = "handleMessage",
             ordinal = 0,
             at = @At(value = "STORE", ordinal = 0)
     )
-    private Text formatChat(Text text, String message) {
-        Text styled = TextStyler.INSTANCE.apply(message);
+    private Text formatChat(Text text, TextStream.Message message) {
+        Text styled = TextStyler.INSTANCE.apply(message.getFiltered());
         if (styled != null) {
             return new TranslatableText("chat.type.text", this.player.getDisplayName(), styled);
         }
