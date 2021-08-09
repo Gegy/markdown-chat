@@ -18,7 +18,7 @@ public class ServerPlayNetworkHandlerMixin {
 
     @ModifyVariable(
             method = "handleMessage",
-            ordinal = 0,
+            ordinal = 1,
             at = @At(value = "STORE", ordinal = 0)
     )
     private Text formatChat(Text text, TextStream.Message message) {
