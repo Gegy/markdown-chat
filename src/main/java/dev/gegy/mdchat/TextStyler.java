@@ -128,7 +128,7 @@ public final class TextStyler {
 
     private Style buildLinkStyle(String url) {
         return Style.EMPTY
-                .withFormatting(Formatting.BLUE, Formatting.UNDERLINE)
+                .withFormatting(Formatting.AQUA, Formatting.UNDERLINE)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(url)));
     }
