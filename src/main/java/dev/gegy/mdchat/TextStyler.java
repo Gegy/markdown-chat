@@ -69,7 +69,19 @@ public final class TextStyler {
     }
 
     private MutableText renderCode(Code code) {
-        return new LiteralText(code.getLiteral()).formatted(Formatting.GRAY);
+        String literal = code.getLiteral();
+        MutableText text = new LiteralText(literal).formatted(Formatting.GRAY);
+        if (literal.startsWith("/")) {
+            return text.styled(style -> style
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to Copy to Console")))
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, literal))
+            );
+        } else {
+            return text.styled(style -> style
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.copy.click")))
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, literal))
+            );
+        }
     }
 
     private MutableText renderStrongEmphasis(StrongEmphasis emphasis) {
