@@ -12,11 +12,8 @@
   },
   "mixins": ["markdown_chat.mixins.json"],
   "accessWidener": "markdown_chat.accesswidener",
-  "compatibilityLevel": "JAVA_16",
   "depends": {
-    "fabricloader": ">=0.11",
-    "fabric": ">=0.34",
-    "minecraft": "1.17.x",
-    "java": ">=16"
+    "minecraft": ">=1.17",
+    "java": ">=17"
   }
 }

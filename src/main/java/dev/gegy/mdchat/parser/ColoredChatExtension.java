@@ -38,21 +38,20 @@ public final class ColoredChatExtension implements Parser.ParserExtension {
         }
 
         @Override
-        public int getDelimiterUse(DelimiterRun opener, DelimiterRun closer) {
-            if (opener.length() >= 1 && closer.length() >= 1) {
+        public int process(DelimiterRun openerRun, DelimiterRun closerRun) {
+            if (openerRun.length() >= 1 && closerRun.length() >= 1) {
+                process(openerRun.getOpener(), openerRun.getCloser());
                 return 1;
             } else {
                 return 0;
             }
         }
 
-        @Override
-        public void process(Text opener, Text closer, int delimiterUse) {
+        private void process(Text opener, Text closer) {
             Formatting targetFormat = null;
 
             Node first = opener.getNext();
-            if (first instanceof Text) {
-                Text firstText = (Text) first;
+            if (first instanceof Text firstText) {
                 String literal = firstText.getLiteral();
                 firstText.setLiteral(literal.substring(1));
 

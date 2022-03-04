@@ -7,19 +7,20 @@ import dev.gegy.mdchat.parser.SpoilerExtension;
 import dev.gegy.mdchat.parser.SpoilerNode;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
-import org.apache.commons.lang3.StringUtils;
 import org.commonmark.ext.autolink.AutolinkExtension;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.node.Text;
 import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 
 public final class TextStyler {
     public static final TextStyler INSTANCE = new TextStyler();
+
+    private static final Style SPOILER = Style.EMPTY.withFormatting(Formatting.DARK_GRAY, Formatting.OBFUSCATED);
 
     private static final Parser PARSER = Parser.builder()
             .enabledBlockTypes(Collections.emptySet())
@@ -68,7 +69,19 @@ public final class TextStyler {
     }
 
     private MutableText renderCode(Code code) {
-        return new LiteralText(code.getLiteral()).formatted(Formatting.GRAY);
+        String literal = code.getLiteral();
+        MutableText text = new LiteralText(literal).formatted(Formatting.GRAY);
+        if (literal.startsWith("/")) {
+            return text.styled(style -> style
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to Copy to Console")))
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, literal))
+            );
+        } else {
+            return text.styled(style -> style
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.copy.click")))
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, literal))
+            );
+        }
     }
 
     private MutableText renderStrongEmphasis(StrongEmphasis emphasis) {
@@ -93,12 +106,8 @@ public final class TextStyler {
     private MutableText renderSpoiler(SpoilerNode spoiler) {
         MutableText text = this.renderChildren(spoiler);
         if (text != null) {
-            int spoilerLength = text.getString().length();
-            String spoilerString = StringUtils.repeat('█', spoilerLength);
-            return new LiteralText(spoilerString).styled(style -> {
-                return style.withColor(Formatting.DARK_GRAY)
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text));
-            });
+            return text.shallowCopy()
+                    .setStyle(SPOILER.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text)));
         }
         return null;
     }
@@ -114,25 +123,32 @@ public final class TextStyler {
 
     @Nullable
     private MutableText renderLink(Link link) {
-        MutableText title;
-        if (link.getTitle() != null) {
-            title = new LiteralText(link.getTitle());
-        } else {
-            title = this.renderChildren(link);
-        }
+        MutableText title = this.renderChildren(link);
 
         if (title == null) {
             title = new LiteralText(link.getDestination());
         }
 
-        return title.setStyle(this.buildLinkStyle(link.getDestination()));
+        MutableText redirectsTo = new LiteralText("Goes to ")
+                .append(new LiteralText(link.getDestination()).formatted(Formatting.AQUA, Formatting.UNDERLINE))
+                .formatted(Formatting.GRAY, Formatting.ITALIC);
+
+        String hoverText = link.getTitle();
+        MutableText hover;
+        if (hoverText != null) {
+            hover = new LiteralText(hoverText).append("\n\n").append(redirectsTo);
+        } else {
+            hover = redirectsTo;
+        }
+
+        return title.setStyle(this.buildLinkStyle(link.getDestination(), hover));
     }
 
-    private Style buildLinkStyle(String url) {
+    private Style buildLinkStyle(String url, MutableText hover) {
         return Style.EMPTY
-                .withFormatting(Formatting.BLUE, Formatting.UNDERLINE)
+                .withFormatting(Formatting.AQUA, Formatting.UNDERLINE)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(url)));
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
     }
 
     @Nullable
