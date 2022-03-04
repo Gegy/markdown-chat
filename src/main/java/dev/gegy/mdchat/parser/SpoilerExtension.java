@@ -37,16 +37,16 @@ public final class SpoilerExtension implements Parser.ParserExtension {
         }
 
         @Override
-        public int getDelimiterUse(DelimiterRun opener, DelimiterRun closer) {
-            if (opener.length() >= 2 && closer.length() >= 2) {
+        public int process(DelimiterRun openerRun, DelimiterRun closerRun) {
+            if (openerRun.length() >= 2 && closerRun.length() >= 2) {
+                process(openerRun.getOpener(), openerRun.getCloser());
                 return 2;
             } else {
                 return 0;
             }
         }
 
-        @Override
-        public void process(Text opener, Text closer, int delimiterUse) {
+        private void process(Text opener, Text closer) {
             Node spoiler = new SpoilerNode();
 
             Node node = opener.getNext();

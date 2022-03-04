@@ -14,8 +14,8 @@ import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.node.Text;
 import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 
 public final class TextStyler {
@@ -95,10 +95,8 @@ public final class TextStyler {
         if (text != null) {
             int spoilerLength = text.getString().length();
             String spoilerString = StringUtils.repeat('█', spoilerLength);
-            return new LiteralText(spoilerString).styled(style -> {
-                return style.withColor(Formatting.DARK_GRAY)
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text));
-            });
+            return new LiteralText(spoilerString).styled(style -> style.withColor(Formatting.DARK_GRAY)
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text)));
         }
         return null;
     }
