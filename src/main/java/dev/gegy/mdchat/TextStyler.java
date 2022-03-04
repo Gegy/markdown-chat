@@ -7,7 +7,6 @@ import dev.gegy.mdchat.parser.SpoilerExtension;
 import dev.gegy.mdchat.parser.SpoilerNode;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
-import org.apache.commons.lang3.StringUtils;
 import org.commonmark.ext.autolink.AutolinkExtension;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
@@ -20,6 +19,8 @@ import java.util.Collections;
 
 public final class TextStyler {
     public static final TextStyler INSTANCE = new TextStyler();
+
+    private static final Style SPOILER = Style.EMPTY.withFormatting(Formatting.DARK_GRAY, Formatting.OBFUSCATED);
 
     private static final Parser PARSER = Parser.builder()
             .enabledBlockTypes(Collections.emptySet())
@@ -93,10 +94,8 @@ public final class TextStyler {
     private MutableText renderSpoiler(SpoilerNode spoiler) {
         MutableText text = this.renderChildren(spoiler);
         if (text != null) {
-            int spoilerLength = text.getString().length();
-            String spoilerString = StringUtils.repeat('█', spoilerLength);
-            return new LiteralText(spoilerString).styled(style -> style.withColor(Formatting.DARK_GRAY)
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text)));
+            return text.shallowCopy()
+                    .setStyle(SPOILER.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text)));
         }
         return null;
     }
