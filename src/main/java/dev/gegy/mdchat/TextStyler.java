@@ -111,25 +111,32 @@ public final class TextStyler {
 
     @Nullable
     private MutableText renderLink(Link link) {
-        MutableText title;
-        if (link.getTitle() != null) {
-            title = new LiteralText(link.getTitle());
-        } else {
-            title = this.renderChildren(link);
-        }
+        MutableText title = this.renderChildren(link);
 
         if (title == null) {
             title = new LiteralText(link.getDestination());
         }
 
-        return title.setStyle(this.buildLinkStyle(link.getDestination()));
+        MutableText redirectsTo = new LiteralText("Goes to ")
+                .append(new LiteralText(link.getDestination()).formatted(Formatting.AQUA, Formatting.UNDERLINE))
+                .formatted(Formatting.GRAY, Formatting.ITALIC);
+
+        String hoverText = link.getTitle();
+        MutableText hover;
+        if (hoverText != null) {
+            hover = new LiteralText(hoverText).append("\n\n").append(redirectsTo);
+        } else {
+            hover = redirectsTo;
+        }
+
+        return title.setStyle(this.buildLinkStyle(link.getDestination(), hover));
     }
 
-    private Style buildLinkStyle(String url) {
+    private Style buildLinkStyle(String url, MutableText hover) {
         return Style.EMPTY
                 .withFormatting(Formatting.AQUA, Formatting.UNDERLINE)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(url)));
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
     }
 
     @Nullable
