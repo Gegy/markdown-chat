@@ -16,6 +16,8 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
+	modImplementation fabricApi.module("fabric-api-base", project.fabric_api_version)
+
 	include(implementation('org.commonmark:commonmark:0.18.1'))
 
 	include(implementation('org.commonmark:commonmark-ext-autolink:0.18.1'))
