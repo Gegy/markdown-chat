@@ -14,6 +14,7 @@
   "accessWidener": "markdown_chat.accesswidener",
   "depends": {
     "minecraft": ">=1.17",
-    "java": ">=17"
+    "java": ">=17",
+    "fabric-api-base": "*"
   }
 }
