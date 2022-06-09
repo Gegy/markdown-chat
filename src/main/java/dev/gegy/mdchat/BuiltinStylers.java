@@ -4,21 +4,26 @@ import dev.gegy.mdchat.parser.ColoredChatExtension;
 import dev.gegy.mdchat.parser.FormattedNode;
 import dev.gegy.mdchat.parser.SpoilerExtension;
 import dev.gegy.mdchat.parser.SpoilerNode;
-import net.minecraft.text.*;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import org.commonmark.ext.autolink.AutolinkExtension;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
-import org.commonmark.node.Text;
 import org.commonmark.node.*;
 
 import java.util.List;
 import java.util.Objects;
 
+import static net.minecraft.text.Text.literal;
+import static net.minecraft.text.Text.translatable;
+
 public final class BuiltinStylers {
 	public static final NodeStyler LITERAL = (node, innerContent) -> {
 		if (node instanceof Text text) {
-			return new LiteralText(text.getLiteral());
+			return literal(text.getLiteral());
 		}
 		return null;
 	};
@@ -26,15 +31,15 @@ public final class BuiltinStylers {
 	public static final NodeStyler CODE = (node, innerContent) -> {
 		if (node instanceof Code code) {
 			String literal = code.getLiteral();
-			MutableText text = new LiteralText(literal).formatted(Formatting.GRAY);
+			MutableText text = literal(literal).formatted(Formatting.GRAY);
 			if (literal.startsWith("/")) {
 				return text.styled(style -> style
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to Copy to Console")))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, literal("Click to Copy to Console")))
 						.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, literal))
 				);
 			} else {
 				return text.styled(style -> style
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.copy.click")))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, translatable("chat.copy.click")))
 						.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, literal))
 				);
 			}
@@ -78,16 +83,16 @@ public final class BuiltinStylers {
 
 	public static final NodeStyler LINK = (node, innerContent) -> {
 		if (node instanceof Link link) {
-			MutableText title = Objects.requireNonNullElseGet(innerContent, () -> new LiteralText(link.getDestination()));
+			MutableText title = Objects.requireNonNullElseGet(innerContent, () -> literal(link.getDestination()));
 
-			MutableText redirectsTo = new LiteralText("Goes to ")
-					.append(new LiteralText(link.getDestination()).formatted(Formatting.AQUA, Formatting.UNDERLINE))
+			MutableText redirectsTo = literal("Goes to ")
+					.append(literal(link.getDestination()).formatted(Formatting.AQUA, Formatting.UNDERLINE))
 					.formatted(Formatting.GRAY, Formatting.ITALIC);
 
 			String hoverText = link.getTitle();
 			MutableText hover;
 			if (hoverText != null) {
-				hover = new LiteralText(hoverText).append("\n\n").append(redirectsTo);
+				hover = literal(hoverText).append("\n\n").append(redirectsTo);
 			} else {
 				hover = redirectsTo;
 			}
@@ -109,7 +114,7 @@ public final class BuiltinStylers {
 
 	public static final NodeStyler SPOILER = (node, innerContent) -> {
 		if (node instanceof SpoilerNode && innerContent != null) {
-			return innerContent.shallowCopy()
+			return innerContent.copyContentOnly()
 					.setStyle(SPOILER_STYLE.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, innerContent)));
 		}
 		return null;

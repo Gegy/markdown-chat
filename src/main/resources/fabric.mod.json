@@ -8,13 +8,15 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "main": []
+    "main": [
+      "dev.gegy.mdchat.Main"
+    ]
   },
-  "mixins": ["markdown_chat.mixins.json"],
   "accessWidener": "markdown_chat.accesswidener",
   "depends": {
-    "minecraft": ">=1.17",
+    "minecraft": ">=1.19",
     "java": ">=17",
-    "fabric-api-base": "*"
+    "fabric-api-base": "*",
+    "fabric-message-api-v1": "*"
   }
 }
