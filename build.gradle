@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.11-SNAPSHOT'
+	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -17,6 +17,7 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation fabricApi.module("fabric-api-base", project.fabric_api_version)
+	modImplementation fabricApi.module("fabric-message-api-v1", project.fabric_api_version)
 
 	include(implementation('org.commonmark:commonmark:0.18.1'))
 
