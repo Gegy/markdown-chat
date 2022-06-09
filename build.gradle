@@ -48,3 +48,32 @@ jar {
 		rename { "${it}_${project.archivesBaseName}" }
 	}
 }
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifactId = project.archivesBaseName
+			artifact(remapJar) {
+				builtBy remapJar
+			}
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
+			}
+		}
+	}
+
+	repositories {
+		def env = System.getenv()
+		if (env.MAVEN_URL) {
+			maven {
+				credentials {
+					username env.MAVEN_USERNAME
+					password env.MAVEN_PASSWORD
+				}
+				url env.MAVEN_URL
+			}
+		} else {
+			mavenLocal()
+		}
+	}
+}
